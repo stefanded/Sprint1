@@ -15,18 +15,16 @@ Acceptance Criteria:
 	• The class should contain a method returns the type of the contained value
 
 	• The function/method that extracts a value should provide type-safe access. If the requested type does not match to stored type exception should be thrown
-Usage example:
-…
-	AnyType anyType = 1;
-	anyType = true;
-	anyType = 1.7;
-	double value = anyType.cast<double>();
-
-	try
-	{
-		int storedValue = anyType.cast<int>();
-	}
-	catch(exceptionType&)
-	{
-		//Bad cast exception
-	}
+	Usage example:
+		AnyType anyType = 1;
+		anyType = true;
+		anyType = 1.7;
+		double value = anyType.cast<double>();
+		try
+		{
+			int storedValue = anyType.cast<int>();
+		}
+		catch(exceptionType&)
+		{
+			//Bad cast exception
+		}
