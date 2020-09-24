@@ -42,7 +42,7 @@ public:
 			this->reset();
 			
 			MyAny temp{ any };
-			swap(temp);
+			std::swap(temp);
 		}
 		return *this;
 	}
