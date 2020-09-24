@@ -196,5 +196,6 @@ void StringListDestroy(char*** begin, char*** end)
         free(*begin);
         *begin = node;
     }
+    *begin= NULL;
     *end = NULL;
 }
