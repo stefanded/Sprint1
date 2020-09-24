@@ -2,17 +2,18 @@
 #include<stdlib.h>
 #include <string.h>
 #include <stdio.h>
-
 #include"List.h"
+
+enum { prev, next};
 void AddNode(char*** begin, char*** end, const char* str)//&
 {
     if (begin == NULL || end == NULL)return;
     char** node = (char**)malloc(2 * sizeof(char*));
-    size_t length = (strlen(str)) + 1;
+    size_t length = (strlen(str)) + next;
 
-    node[0] = (char*)malloc((length) * sizeof(char));
-    strcpy(node[0], str);
-    node[1] = NULL;
+    node[prev] = (char*)malloc((length) * sizeof(char));
+    strcpy(node[prev], str);
+    node[next] = NULL;
 
     if (*begin == NULL) {
         *begin = node;
@@ -23,12 +24,12 @@ void AddNode(char*** begin, char*** end, const char* str)//&
     {
         char** temp_node = *end;
         (*end) = node;
-        temp_node[1] = (char*)(*end);
+        temp_node[next] = (char*)(*end);
     }
 }
 void DeleteElements(char** node)
 {
-    free(node[0]);
+    free(node[prev]);
     free(node);
     node = NULL;
 }
@@ -40,29 +41,29 @@ void StringListRemove(char*** begin, char*** end, const char* str)
     if (*end == NULL || *begin == NULL) { return; }
     while (node != NULL)
     {
-        if (!strcmp(node[0], str))
+        if (!strcmp(node[prev], str))
         {
             if (*end == node)//if deleted element is end ,end elements is previous 
             {
                 *end = prev_node;
             }
             if (prev_node != NULL) {//if previos not end,then he is next
-                prev_node[1] = node[1];
+                prev_node[next] = node[next];
 
             }
             else
             {
-                (*begin) = (char**)node[1];///if previos is begin,then begin is next
+                (*begin) = (char**)node[next];///if previos is begin,then begin is next
                 prev_node = *begin;
 
             }
 
             DeleteElements(node);
-            node = (prev_node == NULL) ? NULL : (char**)prev_node[1];
+            node = (prev_node == NULL) ? NULL : (char**)prev_node[next];
             continue;
         }
         prev_node = node;
-        node = (char**)node[1];
+        node = (char**)node[next];
 
     }
 }
@@ -73,7 +74,7 @@ size_t StringListSize(char** begin)
 
     while (node != NULL) {
         size++;
-        node = (char**)node[1];
+        node = (char**)node[next];
 
     }
     return size;
@@ -85,16 +86,16 @@ void StringListRemoveDuplicates(char*** begin, char*** end)
     if (*end == NULL) { return; }
 
     char** node = *begin;
-    while (node[1] != NULL)
+    while (node[next] != NULL)
     {
-        char** node_next = (char**)node[1];
-        if (!strcmp(node[0], node_next[0])) {
-            node[1] = node_next[1];
+        char** node_next = (char**)node[next];
+        if (!strcmp(node[prev], node_next[prev])) {
+            node[next] = node_next[next];
             DeleteElements(node_next);
         }
         else {
-            StringListRemove(&node_next, end, node[0]);
-            node = (char**)node[1];
+            StringListRemove(&node_next, end, node[prev]);
+            node = (char**)node[next];
 
         }
 
@@ -104,14 +105,14 @@ void StringListRemoveDuplicates(char*** begin, char*** end)
 void StringListReplaceInStrings(char** head, char* before, char* after)
 {
 
-    for (char** list = head; list != NULL; list = (char**)list[1])
+    for (char** list = head; list != NULL; list = (char**)list[next])
     {
 
-        if (!strcmp(list[0], before)) {
+        if (!strcmp(list[prev], before)) {
 
-            free(list[0]);
-            list[0] = (char*)malloc((strlen(after) + 1) * sizeof(char));
-            strcpy(list[0], after);
+            free(list[prev]);
+            list[prev] = (char*)malloc((strlen(after) + next) * sizeof(char));
+            strcpy(list[prev], after);
         }
 
     }
@@ -128,7 +129,7 @@ void StringListSort(char*** list)//buble sort
 {
 
     int swapped;
-    char** ptr1;
+    char** ptrnext;
     char** lptr = NULL;
 
     /* Checking for empty list */
@@ -136,20 +137,20 @@ void StringListSort(char*** list)//buble sort
         return;
     do
     {
-        swapped = 0;
-        ptr1 = *list;
+        swapped = prev;
+        ptrnext = *list;
 
-        while (ptr1[1] != (char*)lptr)
+        while (ptrnext[next] != (char*)lptr)
         {
-            char** next = (char**)ptr1[1];
-            if (strcmp(ptr1[0], next[0]) > 0)
+            char** next_ = (char**)ptrnext[next];
+            if (strcmp(ptrnext[prev], next_[prev]) > prev)
             {
-                Swap(&ptr1[0], &next[0]);
+                Swap(&ptrnext[prev], &next_[prev]);
                 swapped = 1;
             }
-            ptr1 = next;
+            ptrnext = next_;
         }
-        lptr = ptr1;
+        lptr = ptrnext;
     } while (swapped);
 }
 void PrintList(char** begin, char** end)
@@ -157,13 +158,13 @@ void PrintList(char** begin, char** end)
     char** node = begin;
     printf("[");
     while (node != NULL) {
-        if (node[1] != NULL) {
-            printf("%s,", node[0]);
+        if (node[next] != NULL) {
+            printf("%s,", node[prev]);
         }
         else {
-            printf("%s", node[0]);
+            printf("%s", node[prev]);
         }
-        node = (char**)node[1];
+        node = (char**)node[next];
     }
     printf("]\nlist size= %d\n", StringListSize(begin));
 
@@ -174,12 +175,12 @@ int StringListIndexOf(char** begin, const char* str)
 
     char** node = begin;
     while (node != NULL) {
-        if (!strcmp(node[0], str))
+        if (!strcmp(node[prev], str))
         {
             return res;
         }
         res++;
-        node = (char**)node[1];
+        node = (char**)node[next];
 
     }
     return -1;
@@ -190,8 +191,8 @@ void StringListDestroy(char*** begin, char*** end)
     char** node = *begin;
     while (node != NULL)
     {
-        node = (char**)node[1];
-        free((*begin)[0]);
+        node = (char**)node[next];
+        free((*begin)[prev]);
         free(*begin);
         *begin = node;
     }
