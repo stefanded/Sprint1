@@ -29,7 +29,7 @@ void AddNode(char*** begin, char*** end, const char* str)//&
 }
 void DeleteElements(char** node)
 {
-    free(node[prev]);
+    free(node[prev]); //
     free(node);
     node = NULL;
 }
@@ -199,3 +199,7 @@ void StringListDestroy(char*** begin, char*** end)
     *begin= NULL;
     *end = NULL;
 }
+
+//'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead.
+// The potential null pointer is passed into 'strcpy' function. Inspect the first argument. Check lines: 15.
+// Line 32. Possible memory leak if we have more than two elements in the list. Need to verify number of elements in the list.   
