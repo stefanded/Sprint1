@@ -2,8 +2,6 @@
 
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include "pch.h"
-#include<my_preprocessing_project/MyAny.h>
 TEST(TestAny, TestDefaultConstruct) {
 	MyAny Any;
   EXPECT_EQ(Any.type(),typeid(void));
