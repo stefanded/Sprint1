@@ -8,6 +8,7 @@
 #include <exception>
 #include <algorithm>
 
+
 class MyAny
 {
 	void* data_ = nullptr;
@@ -45,11 +46,7 @@ template<class T>
 MyAny::MyAny(T value) : size_type_(sizeof(T)), type_(std::type_index(typeid(T)))
 {
 	static_assert(std::is_fundamental<T>::value && !std::is_void<T>::value && !std::is_null_pointer<T>::value, "error type");
-	T* temp_data = static_cast<T*>(std::calloc(1, size_type_));
-	if (!temp_data)
-	{
-		throw std::bad_alloc{};
-	}
+	T* temp_data =new T(value);
 	*temp_data = value;
 	data_ = temp_data;
 }
@@ -84,13 +81,8 @@ T MyAny::get_value() const
 MyAny::MyAny(const MyAny& any)
 {
 
-	data_ = std::calloc(1, any.size_type_);
-	if (!data_)
-	{
-		throw std::bad_alloc{};
-	}
+	data_ = std::malloc(any.size_type_);
 	std::memcpy(data_, any.data_, any.size_type_);
-
 	type_ = any.type_;
 	size_type_ = any.size_type_;
 
@@ -118,7 +110,7 @@ const std::type_index& MyAny::type() const noexcept
 
 void MyAny::reset() noexcept
 {
-	std::free(data_);
+	delete data_;
 	type_ = std::type_index(typeid(void));;
 	data_ = nullptr;
 	size_type_ = 0;
