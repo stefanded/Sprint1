@@ -1,6 +1,5 @@
 #pragma once
 #include <typeindex>
-#include <sstream>
 #include <exception>
 #include <algorithm>
 
@@ -20,7 +19,7 @@ public:
 	MyAny(const MyAny& any);
 
 	template<class T>
-	MyAny& operator =(T value)noexcept;
+	MyAny& operator =(T value);
 
 	MyAny& operator =(const MyAny& any)noexcept;
 
@@ -45,7 +44,7 @@ MyAny::MyAny(T value) : data_(new T(value)), type_(std::type_index(typeid(T)))
 }
 
 template<class T>
-MyAny& MyAny::operator=(T value) noexcept
+MyAny& MyAny::operator=(T value) 
 {
 	static_assert(std::is_fundamental<T>::value && !std::is_void<T>::value && !std::is_null_pointer<T>::value, "error type");
 	reset();
