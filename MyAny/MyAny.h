@@ -8,6 +8,8 @@
 
 class MyAny
 {
+	//void* ptr = nullptr;
+	size_t size_=0;
 	std::shared_ptr<void> data_;
 	std::type_index type_ = std::type_index(typeid(void));
 public:
@@ -38,8 +40,9 @@ public:
 };
 
 template<class T>
-MyAny::MyAny(T value) : data_(new T(value)), type_(std::type_index(typeid(T)))
+MyAny::MyAny(T value) : data_(std::calloc(1,sizeof(T)),std::free), type_(std::type_index(typeid(T))),size_(sizeof(value))
 {
+	*static_cast<T*>(data_.get()) = value;
 	static_assert(std::is_fundamental<T>::value && !std::is_void<T>::value && !std::is_null_pointer<T>::value, "error type");
 }
 
@@ -47,7 +50,8 @@ template<class T>
 MyAny& MyAny::operator=(T value) 
 {
 	static_assert(std::is_fundamental<T>::value && !std::is_void<T>::value && !std::is_null_pointer<T>::value, "error type");
-	swap(MyAny{ value });
+	MyAny temp{ value };
+	swap(temp);
 	return *this;
 
 }
@@ -68,7 +72,12 @@ T MyAny::get_value() const
 	}
 }
 
-MyAny::MyAny(const MyAny& any) :data_(any.data_), type_(any.type_) {}
+MyAny::MyAny(const MyAny& any) :type_(any.type_), size_(any.size_)
+{
+	
+	data_.reset(std::calloc(1, size_),std::free);
+	std::memcpy(data_.get(), any.data_.get(), size_);
+}
 
 MyAny& MyAny::operator=(const MyAny& any) noexcept
 {
@@ -93,11 +102,13 @@ void MyAny::reset() noexcept
 {
 	data_.reset();
 	type_ = std::type_index(typeid(void));;
-
+	size_ = 0;
 }
 
 void MyAny::swap(MyAny& rhs)
 {
 	std::swap(data_, rhs.data_);
 	std::swap(type_, rhs.type_);
+	std::swap(size_, rhs.size_);
+
 }
