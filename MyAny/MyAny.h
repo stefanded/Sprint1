@@ -1,5 +1,6 @@
 #pragma once
 #include <typeindex>
+#include <sstream>
 #include <exception>
 #include <algorithm>
 
@@ -34,7 +35,6 @@ public:
 	template<class T>
 	T get_value()const;
 
-	~MyAny();
 };
 
 template<class T>
@@ -47,7 +47,6 @@ template<class T>
 MyAny& MyAny::operator=(T value) 
 {
 	static_assert(std::is_fundamental<T>::value && !std::is_void<T>::value && !std::is_null_pointer<T>::value, "error type");
-	reset();
 	swap(MyAny{ value });
 	return *this;
 
@@ -74,8 +73,7 @@ MyAny::MyAny(const MyAny& any) :data_(any.data_), type_(any.type_) {}
 MyAny& MyAny::operator=(const MyAny& any) noexcept
 {
 	if (&any != this) {
-		this->reset();
-		MyAny temp{ any };
+		MyAny temp{any};
 		this->swap(temp);
 	}
 	return *this;
@@ -102,10 +100,4 @@ void MyAny::swap(MyAny& rhs)
 {
 	std::swap(data_, rhs.data_);
 	std::swap(type_, rhs.type_);
-
-}
-
-MyAny::~MyAny()
-{
-	reset();
 }
