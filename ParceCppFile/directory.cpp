@@ -72,3 +72,6 @@ std::ofstream& operator<<(std::ofstream& ofs, const Directory& d)
 	ofs << "total time of time files: " << d.GetTime() << " ms" << '\n';
 	return ofs;
 }
+
+// Line 68-71 Consider creating a reference to avoid using the 'd.GetResult()' expression repeatedly
+// Line 63 'return': conversion from '_Rep' to 'size_t', possible loss of data
